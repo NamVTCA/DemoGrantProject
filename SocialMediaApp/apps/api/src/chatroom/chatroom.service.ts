@@ -1,5 +1,6 @@
-// back-end/src/chatroom/chatroom.service.ts
-import { Injectable, NotFoundException, forwardRef, Inject } from '@nestjs/common';
+// File: apps/api/src/chatroom/chatroom.service.ts
+
+import { Injectable, NotFoundException, forwardRef, Inject, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Chatroom, ChatroomDocument } from './schema/chatroom.schema';
 import { Model, Types } from 'mongoose';
@@ -43,12 +44,22 @@ export class ChatroomService {
     userId1: string,
     userId2: string,
   ): Promise<ChatroomDocument> {
+    // ## SỬA LỖI Ở ĐÂY ##
+    // Thêm lớp kiểm tra để đảm bảo cả hai ID đều hợp lệ trước khi sử dụng
+    if (!Types.ObjectId.isValid(userId1) || !Types.ObjectId.isValid(userId2)) {
+      throw new BadRequestException('Một hoặc cả hai ID người dùng không hợp lệ.');
+    }
+
     const members = [new Types.ObjectId(userId1), new Types.ObjectId(userId2)];
+
+    // Sắp xếp mảng members để đảm bảo thứ tự luôn giống nhau
+    // Ví dụ: [A, B] và [B, A] sẽ được coi là một phòng duy nhất
+    const sortedMembers = members.sort();
 
     const existingChatroom = await this.chatroomModel
       .findOne({
         type: 'private',
-        members: { $all: members, $size: 2 },
+        members: { $all: sortedMembers, $size: 2 },
       })
       .exec();
 
@@ -67,26 +78,24 @@ export class ChatroomService {
     ]);
   }
 
-async findForUser(userId: string): Promise<any[]> {
+  async findForUser(userId: string): Promise<any[]> {
     const userObjectId = new Types.ObjectId(userId);
 
     const chatrooms = await this.chatroomModel.find({ members: userObjectId })
-      .populate<{ members: UserDocument[] }>({ // Ép kiểu để TypeScript hiểu
+      .populate<{ members: UserDocument[] }>({
         path: 'members',
-        select: 'username avatar' // Chỉ lấy các trường cần thiết
+        select: 'username avatar'
       })
       .sort({ updatedAt: -1 })
       .exec();
       
     return chatrooms.map(room => {
-      // Bây giờ, `room.members` là một mảng các đối tượng User đầy đủ
       const roomObject = room.toObject();
       
       let finalName = room.name;
-      let finalAvatar = '/group-avatar.png'; // Avatar mặc định
+      let finalAvatar = '/group-avatar.png';
 
       if (room.type === 'private') {
-        // Tìm người còn lại trong phòng chat
         const otherUser = room.members.find(
           (mem) => mem._id.toString() !== userId
         );
@@ -97,7 +106,6 @@ async findForUser(userId: string): Promise<any[]> {
         }
       }
       
-      // Trả về một đối tượng sạch, có cấu trúc rõ ràng cho frontend
       return {
         _id: room._id,
         name: finalName,
@@ -107,12 +115,14 @@ async findForUser(userId: string): Promise<any[]> {
     });
   }
 
-    async findPrivateRoom(userId1: string, userId2: string) {
-    // Giả sử bạn có model Chatroom đã được inject là this.chatroomModel
-    // và các phòng chat riêng tư có type === 'private' và members là mảng ObjectId
+  async findPrivateRoom(userId1: string, userId2: string) {
+    if (!Types.ObjectId.isValid(userId1) || !Types.ObjectId.isValid(userId2)) {
+        return null; // Trả về null nếu ID không hợp lệ
+    }
+    const sortedMembers = [userId1, userId2].sort();
     return this.chatroomModel.findOne({
       type: 'private',
-      members: { $all: [userId1, userId2], $size: 2 },
+      members: { $all: sortedMembers, $size: 2 },
     });
   }
 }

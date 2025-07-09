@@ -1,22 +1,28 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+// File: apps/api/src/auth/auth.controller.ts
+
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  HttpCode, // 1. Import thêm HttpCode
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @UseGuards(LocalAuthGuard)
+  @HttpCode(200) // 2. Thêm dòng này để trả về mã 200 OK
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
-    const user = await this.authService.validateUser(
-      loginDto.email,
-      loginDto.password,
-    );
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    return this.authService.login(user);
+  async login(@Request() req) {
+    return this.authService.login(req.user);
   }
+
+  // --- CÁC HÀM KHÁC GIỮ NGUYÊN ---
   @Post('send-otp')
   async sendOtp(@Body('email') email: string) {
     return this.authService.sendResetOtp(email);

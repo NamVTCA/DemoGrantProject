@@ -164,11 +164,12 @@ export class UserService {
       );
     }
 
-    await this.notiService.createNoTi(
-      `Bạn có lời mời kết bạn từ ${fromUser.username}`,
-      toUserId,
-      fromUserId,
-    );
+    await this.notiService.create({
+      recipientId: toUserId,
+      senderId: fromUserId,
+      type: 'FRIEND_REQUEST',
+      title: `Bạn có lời mời kết bạn từ ${fromUser.username}`,
+    });
 
     toUser.acceptFriend.push(new Types.ObjectId(fromUserId));
     await toUser.save();

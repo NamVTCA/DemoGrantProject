@@ -1,3 +1,5 @@
+// File: apps/api/src/group/group.service.ts
+
 import {
   Injectable,
   NotFoundException,
@@ -39,8 +41,8 @@ export class GroupService {
 
     const createdGroup = new this.groupModel({
       ...createGroupDto,
-      owner: owner._id, // Không còn lỗi
-      members: [owner._id], // Không còn lỗi
+      owner: owner._id,
+      members: [owner._id],
     });
     const savedGroup = await createdGroup.save();
 
@@ -57,13 +59,12 @@ export class GroupService {
       savedGroup.name,
       ownerId,
       'group',
-      [ownerId], // Thành viên ban đầu chỉ có chủ nhóm
+      [ownerId],
     );
 
     return savedGroup;
   }
 
-  // ... các hàm khác giữ nguyên ...
   async findById(id: string): Promise<Group> {
     const group = await this.groupModel
       .findById(id)
@@ -107,11 +108,13 @@ export class GroupService {
       memberRole._id.toString(),
     );
 
-    await this.notificationService.createNoTi(
-      `${user.username} đã xin vào nhóm "${group.name}".`,
-      group.owner.toString(),
-      userId,
-    );
+    // ## SỬA LỖI SỐ 1 ##
+    await this.notificationService.create({
+      recipientId: group.owner.toString(),
+      senderId: userId,
+      type: 'GROUP_INVITE', // Hoặc 'GROUP_REQUEST'
+      title: `${user.username} đã xin vào nhóm "${group.name}".`,
+    });
 
     return { message: 'Đã gửi yêu cầu tham gia nhóm thành công.' };
   }
@@ -157,21 +160,21 @@ export class GroupService {
       group.members.push(new Types.ObjectId(targetUserId));
       await group.save();
 
-      await this.notificationService.createNoTi(
-        `Yêu cầu tham gia nhóm "${group.name}" của bạn đã được chấp nhận.`,
-        targetUserId,
-        ownerId,
-      );
+      // ## SỬA LỖI SỐ 2 ##
+      await this.notificationService.create({
+          recipientId: targetUserId,
+          senderId: ownerId,
+          type: 'GROUP_INVITE', // Hoặc 'GROUP_ACCEPTANCE'
+          title: `Yêu cầu tham gia nhóm "${group.name}" của bạn đã được chấp nhận.`
+      });
+
       return { message: 'Đã chấp nhận thành viên mới.' };
     } else {
       await this.groupMemService.deleteById(memberRequest._id.toString());
       return { message: 'Đã từ chối yêu cầu tham gia.' };
     }
   }
-  // back-end/src/group/group.service.ts
-  // ...
 
-  // Thêm mới: Hàm xử lý logic mời bạn bè
   async inviteMember(groupId: string, inviterId: string, friendId: string) {
     const group = await this.groupModel.findById(groupId);
     if (!group) {
@@ -182,7 +185,6 @@ export class GroupService {
       throw new HttpException('Người mời không tồn tại', HttpStatus.NOT_FOUND);
     }
 
-    // Kiểm tra người mời có phải là chủ nhóm (owner) không (hoặc thay đổi logic nếu cần)
     if (group.owner.toString() !== inviterId) {
       throw new HttpException(
         'Bạn không có quyền mời thành viên vào nhóm này',
@@ -198,7 +200,6 @@ export class GroupService {
       );
     }
 
-    // Kiểm tra người được mời đã ở trong nhóm chưa
     if (group.members.map(String).includes(friendId)) {
       throw new HttpException(
         'Người này đã ở trong nhóm',
@@ -206,14 +207,14 @@ export class GroupService {
       );
     }
 
-    // Tạo thông báo trong DB
-    await this.notificationService.createNoTi(
-      `${inviter.username} đã mời bạn vào nhóm "${group.name}".`,
-      friendId,
-      inviterId,
-    );
+    // ## SỬA LỖI SỐ 3 ##
+    await this.notificationService.create({
+        recipientId: friendId,
+        senderId: inviterId,
+        type: 'GROUP_INVITE',
+        title: `${inviter.username} đã mời bạn vào nhóm "${group.name}".`
+    });
 
-    // Thêm mới: Gửi sự kiện real-time
     this.chatGateway.server.to(friendId).emit('group_invitation', {
       groupId: group._id,
       groupName: group.name,

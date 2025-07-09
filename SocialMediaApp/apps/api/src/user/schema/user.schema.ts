@@ -12,8 +12,11 @@ export class User {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ default: 0 })
-  xp: number;
+  @Prop({ type: Number, default: 0 })
+  exp: number;
+
+  @Prop({ type: Number, default: 0 })
+  balance: number;
 
   @Prop({ required: true, unique: true })
   email: string;

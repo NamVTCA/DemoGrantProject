@@ -12,6 +12,7 @@ import { ChatbotModule } from 'src/chatbot/chatbot.module';
     forwardRef(() => MessageModule),
     forwardRef(() => UserModule), // Dùng forwardRef để phá vỡ vòng lặp
   ],
+  
   // SỬA: Chỉ cần provide ChatGateway
   providers: [ChatGateway],
   // SỬA: Export ChatGateway

@@ -1,8 +1,10 @@
+// File: apps/api/src/auth/auth.service.ts
+
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from 'src/user/schema/user.schema'; // Import UserDocument
+import { User, UserDocument } from 'src/user/schema/user.schema';
 import * as bcrypt from 'bcrypt';
 import { MailService } from 'src/mail/mail.service';
 import { UserService } from 'src/user/user.service';
@@ -18,7 +20,8 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<UserDocument | null> {
     const user = await this.userModel.findOne({ email }).populate('interest_id').exec();
-    if (user && (await bcrypt.compare(pass, user.password))) {
+    // Use optional chaining `?.` for safety in case user.password is null/undefined
+    if (user && user.password && (await bcrypt.compare(pass, user.password))) {
       return user;
     }
     return null;
@@ -29,21 +32,24 @@ export class AuthService {
       sub: user._id,
       username: user.username,
       role: user.global_role_id,
-      userId: user._id, // Thêm userId vào payload để khớp với code cũ của bạn
+      userId: user._id,
     };
+
+    // ## SỬA LỖI Ở ĐÂY ##
+    // Chuyển đối tượng Mongoose thành một object JavaScript thông thường
+    const userObject = user.toObject();
+    
+    // Dùng object destructuring để tạo object mới không chứa password và salt
+    const { password, salt, ...userWithoutSensitiveData } = userObject;
 
     return {
       access_token: this.jwtService.sign(payload),
-      user: {
-        _id: user._id.toString(), // Trả về _id
-        username: user.username,
-        email: user.email,
-        role: user.global_role_id,
-        interest_id: user.interest_id ?? [],
-      },
+      // Trả về đối tượng user đã được làm sạch
+      user: userWithoutSensitiveData,
     };
   }
 
+  // --- Các hàm khác giữ nguyên ---
   async sendResetOtp(email: string) {
     const user = await this.userService.findByEmail(email);
     if (!user) throw new BadRequestException('Email không tồn tại');
@@ -59,7 +65,6 @@ export class AuthService {
     return { message: 'Mã OTP đã được gửi đến email' };
   }
   
-  // ... các hàm khác giữ nguyên ...
   async verifyOtpAndGenerateToken(email: string, otp: string) {
     const user = await this.userService.findByEmail(email);
     if (

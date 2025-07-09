@@ -1,18 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import './index.css';
-import { BrowserRouter } from 'react-router-dom';
-import '../styles/_colors.scss';
-import { ChatProvider } from './Context/ChatContext';
+// File: apps/web/src/main.tsx
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+
+import App from "./App";
+import { AuthContextProvider } from "./Context/AuthContext";
+import { SocketContextProvider } from "./Context/SocketContext";
+import { ChatProvider } from "./Context/ChatContext";
+import { NotificationProvider } from "./contexts/NotificationContext"; // 1. Import NotificationProvider
+
+import "./index.css";
+import "../styles/_colors.scss";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
-      {/* ChatProvider sẽ cung cấp "bộ não" chat cho toàn bộ App */}
-      <ChatProvider>
-        <App />
-      </ChatProvider>
+      {/* Cấu trúc bọc đúng: Context nào cần bởi context khác thì phải được bọc ở ngoài */}
+      <AuthContextProvider>
+        <SocketContextProvider>
+          <NotificationProvider> {/* 2. Bọc App và ChatProvider bên trong */}
+            <ChatProvider>
+              <App />
+            </ChatProvider>
+          </NotificationProvider>
+        </SocketContextProvider>
+      </AuthContextProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

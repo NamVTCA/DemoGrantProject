@@ -1,49 +1,29 @@
-import type { CreateUserDto } from '../types/user';
+// File: apps/web/src/Api/Auth.ts
+
+import type { CreateUserDto, LoginResponse } from '../types/user';
 import { api } from './api';
-
-// --- Định nghĩa kiểu dữ liệu cho các đối tượng ---
-
-// Định nghĩa cấu trúc của đối tượng User trả về
-interface AuthUser {
-  _id: string;
-  username: string;
-  email: string;
-  avatar?: string;       // Sửa: Thêm dấu '?' để cho biết trường này không bắt buộc
-  interests: string[];  // Sửa: Sửa lỗi chính tả
-  role: 'user' | 'admin' | 'moderator'; // Gợi ý: Thêm vai trò để dễ dàng phân quyền trên FE
-}
-// Định nghĩa cấu trúc cho toàn bộ response của API login
-interface LoginResponse {
-  access_token: string;
-  user: AuthUser;
-}
-
-
-// --- Các hàm API ---
 
 export const register = (dto: CreateUserDto) => {
   return api.post('/users/register', dto);
 };
 
 export const login = async (credentials: { email: string; password: string }): Promise<LoginResponse> => {
-  // Báo cho axios biết rằng kết quả trả về sẽ có dạng LoginResponse
-  const response = await api.post<LoginResponse>('/auth/login', credentials);
-  const data = response.data;
+  // ## SỬA LỖI CUỐI CÙNG Ở ĐÂY ##
+  // Ép kiểu 2 bước: `as unknown as LoginResponse`
+  // Báo cho TypeScript rằng chúng ta biết rõ kết quả trả về từ interceptor là LoginResponse.
+  const data = (await api.post('/auth/login', credentials)) as unknown as LoginResponse;
 
-  // Logic lưu vào localStorage sau khi đăng nhập thành công
-  // Giờ đây TypeScript sẽ không báo lỗi nữa vì nó biết rõ cấu trúc của 'data'
+  // Logic lưu token vào localStorage giờ sẽ hoạt động
   if (data?.access_token && data?.user?._id) {
     localStorage.setItem('token', data.access_token);
-    localStorage.setItem('userId', data.user._id);
-    localStorage.setItem('user', JSON.stringify(data.user));
   } else {
-    // Ném lỗi nếu dữ liệu trả về không như mong đợi
     throw new Error('Phản hồi đăng nhập không hợp lệ.');
   }
 
   return data;
 };
 
+// --- CÁC HÀM API KHÁC GIỮ NGUYÊN ---
 export const sendResetPasswordOtp = (email: string) => {
   return api.post('/auth/send-otp', { email });
 };

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
-import { useAuth } from './AuthContext'; // <-- Use the newly created AuthContext hook
+// 1. Import hook chuẩn từ AuthContext
+import { useAuthContext } from './AuthContext';
 
 interface ISocketContext {
   socket: Socket | null;
@@ -8,35 +9,35 @@ interface ISocketContext {
 
 const SocketContext = createContext<ISocketContext>({ socket: null });
 
-// Custom hook to easily access the socket context
 export const useSocket = () => {
     return useContext(SocketContext);
 };
 
 export const SocketContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const { user } = useAuth(); // <-- Get user from our new AuthContext
+  // 2. Dùng hook useAuthContext để lấy authUser
+  const { authUser } = useAuthContext();
 
   useEffect(() => {
-    if (user?._id) {
-      // Connect to the server with the userId in the query
-      const newSocket = io('http://localhost:9090', {
-        query: { userId: user._id },
+    if (authUser?._id) {
+      const newSocket = io('http://localhost:9090', { // Đảm bảo port đúng với BE
+        query: { userId: authUser._id },
       });
       setSocket(newSocket);
 
-      // Dọn dẹp khi component unmount
+      // Dọn dẹp khi component unmount hoặc khi authUser thay đổi
       return () => {
-        newSocket.disconnect();
+        newSocket.close();
       };
     } else {
-      // Nếu không có user, ngắt kết nối socket hiện tại (nếu có)
+      // Nếu không có user (đã logout), ngắt kết nối socket hiện tại
       if (socket) {
-        socket.disconnect();
+        socket.close();
         setSocket(null);
       }
     }
-  }, [user]); // Re-run this effect if the user changes (login/logout)
+    // 3. Dependency phải là [authUser]
+  }, [authUser]);
 
   return (
     <SocketContext.Provider value={{ socket }}>

@@ -1,88 +1,90 @@
+// File: apps/web/src/contexts/NotificationContext.tsx
+
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { useAuthContext } from '../Context/AuthContext';
+import { useSocket } from '../Context/SocketContext';
+import { notificationApi } from '../Api/notificationApi';
 
-interface INotificationContext {
-  unreadCounts: { [senderId: string]: number };
-  markNotificationsAsRead: (senderId: string) => Promise<void>;
-  socket: Socket;
+// Định nghĩa kiểu dữ liệu cho object đếm để code an toàn hơn
+interface UnreadCountResponse {
+  count: number;
 }
 
-// Kết nối socket với query chứa userId để xác thực trên gateway
-const token = localStorage.getItem('token');
-// Giả sử bạn parse token để lấy userId hoặc có sẵn trong localStorage
-const userId = localStorage.getItem('userId');
-const socket = io('http://localhost:9090', {
-  query: { userId },
-});
+interface INotificationContext {
+  notifications: any[];
+  unreadCount: number;
+  fetchNotifications: () => void;
+  markAllAsRead: () => Promise<void>;
+}
 
 const NotificationContext = createContext<INotificationContext | null>(null);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
-  const [unreadCounts, setUnreadCounts] = useState<{ [senderId: string]: number }>({});
+  const { authUser } = useAuthContext();
+  const { socket } = useSocket();
 
-  const fetchUnreadCounts = useCallback(async () => {
-    if (!token) return;
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+
+  const fetchInitialData = useCallback(async () => {
+    if (!authUser) return;
     try {
-      // Gọi API mới: /unread-by-sender
-      const res = await fetch('http://localhost:9090/api/notifications/unread-by-sender', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    if (res.ok) {
-      const data = await res.json();
-      console.log("CONTEXT: Dữ liệu thông báo từ API:", data); 
-      setUnreadCounts(data.counts || {});
-    } else {
-      console.error("CONTEXT: Lỗi khi gọi API, status:", res.status);
-    }
+      const countResponse = (await notificationApi.getUnreadCount()) as unknown as UnreadCountResponse;
+      const notifsResponse = (await notificationApi.getNotifications()) as unknown as any[];
+      
+      setUnreadCount(countResponse?.count || 0); // Thêm ?. để an toàn hơn
+      setNotifications(notifsResponse || []);
+
     } catch (error) {
-      console.error("Lỗi khi lấy thông báo chi tiết:", error);
+      console.error("Lỗi khi tải dữ liệu thông báo:", error);
     }
-  }, [token]);
+  }, [authUser]);
 
   useEffect(() => {
-    fetchUnreadCounts();
-  }, [fetchUnreadCounts]);
+    if (authUser) {
+      fetchInitialData();
+    }
+  }, [authUser, fetchInitialData]);
 
+  // Lắng nghe sự kiện real-time từ server
   useEffect(() => {
-    const handleNewNotification = (data: { sender_id: string }) => {
-      if (data.sender_id) {
-        setUnreadCounts(prev => ({
-          ...prev,
-          [data.sender_id]: (prev[data.sender_id] || 0) + 1,
-        }));
-      }
+    // ## SỬA LỖI Ở ĐÂY ##
+    // Thêm một lớp kiểm tra để đảm bảo socket không phải là null trước khi sử dụng
+    if (!socket) {
+      return; // Nếu chưa có socket, không làm gì cả và thoát ra
+    }
+
+    const handleNewNotification = (newNotification: any) => {
+      setNotifications(prev => [newNotification, ...prev]);
+      setUnreadCount(prev => prev + 1);
     };
-    socket.on('newNotification', handleNewNotification);
+
+    socket.on('new_notification', handleNewNotification);
+
+    // Dọn dẹp listener khi component unmount hoặc socket thay đổi
     return () => {
-      socket.off('newNotification', handleNewNotification);
+      socket.off('new_notification', handleNewNotification);
     };
-  }, []);
+  }, [socket]); // Chỉ chạy lại khi socket thay đổi
 
-  const markNotificationsAsRead = async (senderId: string) => {
-    if (!token || !unreadCounts[senderId]) return; // Chỉ gọi khi có tin nhắn chưa đọc
+  const markAllAsRead = async () => {
+    if (unreadCount === 0) return;
     try {
-      // Gọi API mới: /mark-as-read
-      await fetch('http://localhost:9090/api/notifications/mark-as-read', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ sender_id: senderId }),
-      });
-      // Cập nhật state ngay lập tức
-      setUnreadCounts(prev => {
-        const newCounts = { ...prev };
-        delete newCounts[senderId];
-        return newCounts;
-      });
+      await notificationApi.markAllAsRead();
+      setUnreadCount(0);
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
     } catch (error) {
       console.error("Lỗi khi đánh dấu đã đọc:", error);
     }
   };
 
-  const value = { unreadCounts, markNotificationsAsRead, socket };
+  const value = {
+    notifications,
+    unreadCount,
+    fetchNotifications: fetchInitialData,
+    markAllAsRead,
+  };
 
   return (
     <NotificationContext.Provider value={value}>

@@ -10,7 +10,7 @@ import { NotificationGateway } from './notification.gateway';
 export class CreateNotificationDto {
   recipientId: string; // ID người nhận
   senderId: string; // ID người gửi
-  type: 'NEW_FOLLOWER' | 'FRIEND_REQUEST' | 'GROUP_INVITE' | 'POST_LIKE'; // Các loại thông báo
+  type: 'NEW_FOLLOWER' | 'FRIEND_REQUEST' | 'GROUP_INVITE' | 'POST_LIKE' | 'NEW_MESSAGE'; // Các loại thông báo
   title: string; // Nội dung thông báo
   postId?: string; // Tùy chọn: ID bài viết liên quan
 }

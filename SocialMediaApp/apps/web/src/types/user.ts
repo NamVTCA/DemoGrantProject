@@ -1,4 +1,47 @@
-// src/types/user.ts
+// File: apps/web/src/types/user.ts
+
+// ===================================================================
+// ==  ĐÂY LÀ PHIÊN BẢN CHUẨN, ĐỒNG BỘ VỚI SCHEMA TỪ BACKEND CỦA BẠN ==
+// ===================================================================
+
+/**
+ * Định nghĩa đầy đủ cho đối tượng User.
+ * Mọi component trong Frontend sẽ sử dụng kiểu dữ liệu này.
+ */
+export interface AuthUser {
+  _id: string; // Mongoose tự động tạo _id kiểu string sau khi populate
+  username: string;
+  email: string;
+  exp: number;
+  balance: number;
+  gender: 'male' | 'female' | 'other';
+  status: boolean;
+  hideProfile: boolean;
+  interest_id: string[]; // ObjectId từ backend sẽ là string ở frontend
+  friend_id: string[];
+  acceptFriend: string[];
+  global_role_id: string;
+  notification: string[];
+  type_id: string[];
+  avatar?: string; // Optional fields
+  address?: string;
+  birthday?: string; // Date từ backend thường được gửi dưới dạng chuỗi ISO
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Định nghĩa chuẩn cho response của API login.
+ */
+export interface LoginResponse {
+  access_token: string;
+  user: AuthUser; // Sử dụng AuthUser chuẩn ở trên
+}
+
+
+// =======================================================
+// ==     CÁC DTO CŨ CỦA BẠN (GIỮ NGUYÊN)               ==
+// =======================================================
 
 /**
  * Dto tương ứng với CreateUserDto ở backend NestJS

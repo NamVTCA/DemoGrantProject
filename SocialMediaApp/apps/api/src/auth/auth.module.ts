@@ -1,24 +1,26 @@
+// File: apps/api/src/auth/auth.module.ts
+
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { User, UserSchema } from 'src/user/schema/user.schema';
-import { JwtStrategy } from './jwt.strategy';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserModule } from 'src/user/user.module';
+import { MailModule } from 'src/mail/mail.module';
 
-import { UserModule } from '../user/user.module';
-import { MailModule } from '../mail/mail.module';
-import { MailService } from 'src/mail/mail.service';
+import { LocalStrategy } from './strategies/local.strategy'; // 1. Import LocalStrategy
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
-    UserModule,
-    MailModule,
-
-    ConfigModule,
+    UserModule, // Import UserModule để có thể dùng UserService
+    MailModule, // Import MailModule để có thể dùng MailService
     PassportModule,
+    ConfigModule, // Đảm bảo ConfigModule được import
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -26,13 +28,14 @@ import { MailService } from 'src/mail/mail.service';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRES_IN'),
+          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '1d',
         },
       }),
     }),
-    UserModule,
   ],
-  providers: [AuthService, JwtStrategy, MailService],
   controllers: [AuthController],
+  // 2. Thêm LocalStrategy vào danh sách providers
+  // Xóa MailService khỏi đây vì nó đã được cung cấp bởi MailModule
+  providers: [AuthService, LocalStrategy, JwtStrategy],
 })
 export class AuthModule {}

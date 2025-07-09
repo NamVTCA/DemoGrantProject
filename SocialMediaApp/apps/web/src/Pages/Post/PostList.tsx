@@ -23,7 +23,7 @@ export default function PostList() {
         setLoading(true);
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch('http://localhost:9090/post', {
+            const res = await fetch('http://localhost:9090/posts', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const data = await res.json();
