@@ -1,0 +1,51 @@
+// font-end/src/Pages/Messenger/MessengerPage.module.scss
+
+.messengerContainer {
+  display: flex;
+  height: calc(100vh - 60px); // Chiều cao màn hình trừ đi Navbar
+  margin: 0 auto; // Đưa vào giữa nếu cần
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem; // Bo tròn góc giống card login
+  overflow: hidden; // Đảm bảo các thành phần con không tràn ra ngoài
+  max-width: 1400px; // Giới hạn chiều rộng tối đa
+  margin-top: 10px; // Tạo khoảng cách với Navbar
+}
+
+.sidebar {
+  width: 360px;
+  min-width: 300px;
+  border-right: 1px solid #e9ebee;
+  display: flex;
+  flex-direction: column;
+  background-color: #f7f9fa; // Nền sidebar hơi xám nhẹ
+}
+
+.chatArea {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.noChatSelected {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #65676b;
+  background: linear-gradient(to bottom right, #fdfdfd, #f0f2f5); // Thêm gradient nhẹ
+
+  h2 {
+    font-weight: 500;
+    font-size: 1.75rem;
+    color: #333;
+  }
+
+  p {
+    margin-top: 8px;
+    font-size: 1rem;
+  }
+}

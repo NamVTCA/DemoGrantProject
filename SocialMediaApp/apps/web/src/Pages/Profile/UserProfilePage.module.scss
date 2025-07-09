@@ -1,0 +1,101 @@
+// font-end/src/Pages/Profile/ProfileUser.module.scss
+
+.profileUserPage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    background-color: #f0f2f5;
+    font-family: Arial, sans-serif;
+}
+
+.profileCard {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    padding: 24px;
+    text-align: center;
+}
+
+.avatarSection {
+    margin-bottom: 20px;
+    .avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
+    h2 {
+        font-size: 1.5rem;
+        color: #1c1e21;
+        margin: 0;
+    }
+}
+
+.infoGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.actionButton {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    background-color: #1877f2;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    &:hover {
+        background-color: #166fe5;
+    }
+
+    &:disabled {
+        background-color: #e4e6eb;
+        color: #bcc0c4;
+        cursor: not-allowed;
+    }
+
+    &.success {
+        background-color: #42b72a;
+        &:hover { background-color: #36a420; }
+    }
+
+    &.error {
+        background-color: #fa383e;
+        &:hover { background-color: #e33136; }
+    }
+}
+
+.feedbackMessage {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #65676b;
+}
+
+.loading, .error {
+    font-size: 1.2rem;
+    color: #65676b;
+}
+
+.actionButton {
+    // ...
+    &.pending {
+        background-color: #ff9f43; // Màu cam cho trạng thái chờ
+        color: white;
+        &:hover { background-color: #e68e36; }
+    }
+}

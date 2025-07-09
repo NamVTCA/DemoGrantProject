@@ -1,0 +1,162 @@
+@use "sass:color";
+
+// === Bảng màu được lấy cảm hứng từ trang Login ===
+$primary-green: #2c7d5f;
+$primary-green-dark: #1f5e47;
+$hover-bg: #f1f8c9;
+$text-dark: #333;
+$text-light: #65676b;
+
+// === Animation cho tin nhắn mới ===
+@keyframes messageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// === Cấu trúc Layout chính ===
+.chatWindow {
+  display: flex;
+  flex-direction: column;
+  height: 100%; // Quan trọng: Luôn chiếm 100% chiều cao của cha
+  background: linear-gradient(to bottom, #ffffff, #f7f9fa);
+  overflow: hidden; // Ngăn các thành phần con tràn ra ngoài
+}
+
+.header {
+  padding: 10px 15px;
+  background-color: #fff;
+  border-bottom: 1px solid #e9ebee;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0; // Đảm bảo header không bị co lại
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+  img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 12px;
+  }
+
+  h3 { 
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: $primary-green-dark;
+  }
+}
+
+// === KHU VỰC HIỂN THỊ TIN NHẮN ===
+// Thẻ <main> thay cho <div> để đúng ngữ nghĩa hơn
+.messageList {
+  flex-grow: 1; // Quan trọng: Chiếm hết không gian còn lại, đẩy form xuống dưới
+  padding: 15px;
+  overflow-y: auto; // Tự động có thanh cuộn khi cần
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message {
+  display: flex;
+  max-width: 75%;
+  animation: messageFadeIn 0.4s ease-out;
+
+  .bubble {
+    padding: 10px 14px;
+    border-radius: 20px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    p { margin: 0; word-wrap: break-word; line-height: 1.4; }
+  }
+}
+
+.myMessage {
+  align-self: flex-end;
+  .bubble {
+    background-color: $primary-green;
+    color: white;
+    border-bottom-right-radius: 5px;
+  }
+}
+
+.theirMessage {
+  align-self: flex-start;
+  .bubble {
+    background-color: #2860ee;
+    color: $text-dark;
+    border-bottom-left-radius: 5px;
+  }
+  .senderName {
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    color: $text-dark;
+    padding-left: 5px;
+  }
+}
+
+// === KHU VỰC NHẬP LIỆU (FOOTER) ===
+.footer {
+  flex-shrink: 0; // Đảm bảo footer không bị co lại
+  background-color: #fff;
+  border-top: 1px solid #e0e0e0;
+}
+
+.messageForm {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  gap: 10px;
+
+  input {
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 10px 18px;
+    font-size: 1rem;
+    background-color: #f0f2f5;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-green;
+      background-color: #fff;
+      box-shadow: 0 0 0 3px rgba($primary-green, 0.2);
+    }
+  }
+  
+  button {
+    flex-shrink: 0;
+    border: none;
+    background-color: $primary-green;
+    color: white;
+    font-size: 1rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba($primary-green-dark, 0.3);
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: $primary-green-dark;
+      transform: scale(1.1);
+    }
+
+    &:disabled {
+      background-color: #ccc;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+  }
+}

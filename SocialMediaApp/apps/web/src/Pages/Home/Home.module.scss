@@ -1,0 +1,110 @@
+.homePage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to right, #e3f2a5, #a8d8a2);
+  font-family: Arial, sans-serif;
+  padding: 20px 0;
+}
+
+.card {
+  width: 95%;
+  max-width: 1400px;
+  min-height: 700px;
+  display: flex;
+  margin: auto;
+  border-radius: 1.1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  // ===== THAY ĐỔI: Nền chính của card sẽ là màu xám nhạt =====
+  background-color: #f7f8fa;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+// ===== THAY ĐỔI LỚN Ở ĐÂY =====
+.left, .middle, .right {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 24px;
+  // Bỏ background riêng của từng cột
+}
+
+.left {
+  flex: 1.2;
+  // Bỏ background và color ở đây để dùng chung nền của .card
+}
+
+.middle {
+  flex: 2.5;
+  background-color: #ffffff; // Cột giữa vẫn có nền trắng để nổi bật
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
+  h1 { font-size: 2rem; color: #1f5e47; }
+  p { color: #555; margin-top: 10px; }
+}
+
+.right {
+  flex: 1.2;
+  // Bỏ background-color ở đây
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+// Media queries giữ nguyên...
+
+  @media (max-width: 768px) {
+    .card {
+      flex-direction: column;
+      min-height: auto;
+
+      .left,
+      .middle,
+      .right {
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .left {
+        height: 200px;
+
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        p {
+          font-size: 0.9rem;
+        }
+      }
+
+      .middle,
+      .right {
+        h1 {
+          font-size: 1.4rem;
+        }
+
+        p {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

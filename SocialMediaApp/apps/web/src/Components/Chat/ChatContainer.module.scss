@@ -1,0 +1,59 @@
+.chatContainer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-end;
+  z-index: 1001; // Đảm bảo nổi trên các thành phần khác
+  pointer-events: none; // Cho phép click xuyên qua container
+}
+.popupWrapper {
+  position: absolute;
+  bottom: 0;
+  transition: right 0.3s ease;
+  pointer-events: all; // Cho phép click vào các cửa sổ chat
+}
+.chatPopup {
+  width: 320px;
+  height: 450px;
+  background: white;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  transition: height 0.3s ease;
+  &.minimized {
+    height: 48px; // Chiều cao của header
+  }
+}
+.popupHeader {
+  background-color: #1f5e47; // Dùng màu xanh của bạn
+  color: white;
+  padding: 0 10px;
+  height: 48px;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: bold;
+  img { width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; }
+}
+.closeBtn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 5px;
+  opacity: 0.8;
+  &:hover { opacity: 1; }
+}
+.popupBody {
+  flex-grow: 1;
+  // Xóa border của ChatWindow bên trong để nó khớp hoàn hảo
+  & > div {
+    border: none;
+    height: 100%;
+  }
+}

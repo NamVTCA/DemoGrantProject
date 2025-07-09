@@ -1,0 +1,150 @@
+// src/Pages/Group/GroupPage.module.scss
+
+@use "sass:color"; // <-- BƯỚC 1: Thêm dòng này ở đầu file
+
+.groupPage {
+  width: 100%;
+  max-width: 900px;
+  margin: 24px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.coverImage {
+  height: 300px;
+  background: linear-gradient(to right, #1f5e47, #2c7d5f);
+  position: relative;
+  .backButton {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+.header {
+  padding: 24px;
+  text-align: center;
+  border-bottom: 1px solid #e9ebee;
+  h1 {
+    margin: 0 0 8px 0;
+    color: #1f5e47;
+  }
+  p {
+    margin: 0 0 16px 0;
+    color: #65676b;
+  }
+  .inviteButton {
+    background-color: #1f5e47;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    // BƯỚC 2: Thay thế hàm darken() bằng color.adjust()
+    &:hover {
+      background-color: color.adjust(#1f5e47, $lightness: -5%);
+    }
+  }
+}
+
+.content {
+  padding: 24px;
+  h3 {
+    margin: 0 0 16px 0;
+  }
+}
+
+.memberList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.memberItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #e9ebee;
+  border-radius: 8px;
+  img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+  }
+  span {
+    font-weight: 600;
+  }
+}
+
+.pageLoader {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 1.2rem;
+}
+
+.actionButton {
+  margin-top: 16px;
+  background-color: #1f5e47;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s, transform 0.2s;
+
+  &:hover {
+    background-color: color.adjust(#1f5e47, $lightness: -5%);
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  &.joined {
+    background-color: #28a745; // Màu xanh lá
+    &:hover {
+      background-color: #218838;
+    }
+  }
+
+  &.pending {
+    background-color: #ffc107; // Màu vàng
+    color: #212529;
+    &:hover {
+      background-color: #e0a800;
+    }
+  }
+}
+
+.managementSection {
+  padding: 24px;
+  background-color: #f7f7f7;
+  border-top: 1px solid #e9ebee;
+  border-bottom: 1px solid #e9ebee;
+}

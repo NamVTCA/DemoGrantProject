@@ -1,0 +1,206 @@
+// File: ChatPopup.module.scss
+
+@use "sass:color";
+
+// === BIẾN MÀU (Lấy cảm hứng từ login.scss) ===
+$primary-color: #1f5e47;
+$secondary-color: #e3f2a5;
+$text-color-light: #ffffff;
+$text-color-dark: #333333;
+$body-bg: #f8f9fa;
+$container-bg: #ffffff;
+$border-color: #e0e0e0;
+
+// === ĐỊNH NGHĨA CHUNG (Giống .card trong login.scss) ===
+.chatWindow {
+  display: flex;
+  flex-direction: column;
+  background-color: $container-bg;
+  border-radius: 1.1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease;
+
+  // === THAY ĐỔI QUAN TRỌNG Ở ĐÂY ===
+  // Thiết lập một khung tĩnh cho cửa sổ chat
+  width: 400px;      // Chiều rộng cố định
+  height: 70vh;      // Chiều cao bằng 70% chiều cao màn hình
+  max-height: 700px; // Giới hạn chiều cao tối đa
+  min-height: 450px; // Chiều cao tối thiểu để giao diện không bị vỡ
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(31, 94, 71, 0.2);
+  }
+}
+
+// === HEADER (Nền xanh đậm) ===
+.header {
+  display: flex;
+  align-items: center;
+  padding: 12px 18px;
+  background-color: $primary-color;
+  color: $text-color-light;
+  flex-shrink: 0; // Đảm bảo header không bị co lại
+
+  img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+}
+
+// === DANH SÁCH TIN NHẮN ===
+.messageList {
+  flex: 1; // Lấp đầy không gian còn lại giữa header và form
+  overflow-y: auto; // Tự động hiển thị thanh cuộn khi cần
+  padding: 20px 15px;
+  display: flex;
+  flex-direction: column;
+  background-color: $body-bg;
+
+  // Tùy chỉnh thanh cuộn cho đẹp hơn
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+// === ĐỊNH DẠNG TIN NHẮN ===
+.message {
+  display: flex;
+  margin-bottom: 15px;
+  max-width: 80%; // Tăng độ rộng tối đa của tin nhắn một chút
+
+  .bubble {
+    padding: 10px 15px;
+    border-radius: 18px;
+    word-wrap: break-word;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+
+    p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+  }
+
+  .senderName {
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #555;
+  }
+}
+
+// === TIN NHẮN CỦA BẠN (Nền xanh đậm) ===
+.myMessage {
+  align-self: flex-end;
+
+  .bubble {
+    background-color: $primary-color;
+    color: $text-color-light;
+  }
+}
+
+// === TIN NHẮN CỦA NGƯỜI KHÁC (Nền trắng, có viền) ===
+.theirMessage {
+  align-self: flex-start;
+
+  .bubble {
+    background-color: $container-bg;
+    color: $text-color-dark;
+    border: 1px solid $border-color;
+  }
+}
+
+// === FORM NHẬP LIỆU (Giống .right trong login.scss) ===
+.messageForm {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: $container-bg;
+  border-top: 1px solid $border-color;
+  flex-shrink: 0; // Đảm bảo form không bị co lại
+  gap: 10px;
+
+  input {
+    flex: 1;
+    padding: 12px 18px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 1rem;
+    background-color: $secondary-color;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #9dc891;
+      background-color: #f1f8c9;
+      box-shadow: 0 2px 6px rgba(31, 94, 71, 0.15);
+    }
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    font-size: 1.5rem;
+    color: $primary-color;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: color.adjust($primary-color, $lightness: 15%);
+      transform: scale(1.1);
+    }
+
+    &:disabled {
+      color: #b0c4de;
+      cursor: not-allowed;
+      transform: scale(1);
+    }
+  }
+}
+
+.myMessage {
+  // Sắp xếp lại để status nằm dưới bubble
+  flex-direction: column; 
+  align-items: flex-end;
+
+  .messageStatus {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 4px;
+    padding-right: 12px;
+  }
+}
+
+.closeButton { // Style cho nút đóng
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+}

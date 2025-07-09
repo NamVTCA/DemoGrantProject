@@ -1,0 +1,240 @@
+@use "sass:color";
+
+/* Kế thừa màu sắc và font từ trang Login */
+$primary-green-dark: #1f5e47;
+$primary-green-light: #2c7d5f;
+$accent-green-bg: #e3f2a5;
+$accent-green-hover: #cbe494;
+$neutral-bg: #f0f2f5;
+$notification-red: #e63946;
+
+.navbar {
+  height: 65px;
+  background-color: #9ff483;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.5rem;
+  background-color: $accent-green-bg;
+  color: $primary-green-dark;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  padding: 8px 16px;
+  border-radius: 12px;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+// ===== KHU VỰC TÌM KIẾM (MỚI & CẬP NHẬT) =====
+.searchContainer {
+  position: relative;
+  width: 40%;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 15px;
+  color: #65676b;
+  z-index: 1; // Đảm bảo icon nổi lên trên input
+}
+
+.searchInput {
+  width: 100%; // Chiếm hết không gian của container
+  padding: 10px 20px 10px 40px; // Tăng padding trái để chừa chỗ cho icon
+  border: 1px solid #dfe1e5;
+  border-radius: 24px;
+  background-color: #ffffff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #c5c7ca;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $primary-green-light;
+    box-shadow: 0 0 0 3px rgba(44, 125, 95, 0.15);
+  }
+}
+
+.searchResultsDropdown {
+  position: absolute;
+  top: calc(100% + 8px); // Khoảng cách với ô search
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1001;
+  border: 1px solid #eee;
+
+  h4 {
+    padding: 8px 15px;
+    margin: 4px 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #65676b;
+  }
+}
+
+.resultItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 15px;
+  cursor: pointer;
+  &:hover {
+    background-color: $neutral-bg;
+  }
+
+  img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  span {
+      font-weight: 500;
+  }
+}
+
+
+// ===== CÁC KHU VỰC CÒN LẠI =====
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profileContainer {
+  position: relative;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px 6px 6px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+  border: 2px solid white;
+}
+
+.profile span {
+  font-weight: 600;
+  color: $primary-green-dark;
+  font-size: 0.95rem;
+}
+
+.requestsContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.navIcon {
+  font-size: 1.9rem;
+  color: $primary-green-light;
+}
+
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: $notification-red;
+  color: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border: 2px solid white;
+  transform: translate(20%, -20%);
+}
+
+.requestsDropdown, .profileDropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 360px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  padding: 8px;
+  border: 1px solid #eee;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.profileDropdown {
+    min-width: 200px;
+    width: auto;
+}
+
+.requestsDropdown > div {
+    box-shadow: none;
+    padding: 12px;
+}
+
+.dropdownItem {
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f0f2f5;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
