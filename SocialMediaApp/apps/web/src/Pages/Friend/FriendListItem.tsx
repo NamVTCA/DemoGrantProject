@@ -1,5 +1,7 @@
+// File: apps/web/src/Pages/Friend/FriendListItem.tsx
+
 import React from 'react';
-import { useNotifications } from '../../contexts/NotificationContext';
+// Không cần import useNotifications nữa vì chúng ta tạm thời không hiển thị badge
 import styles from './FriendListItem.module.scss';
 
 // Định nghĩa kiểu dữ liệu cho một người bạn
@@ -12,14 +14,14 @@ interface Friend {
 // Props cho component
 interface Props {
   friend: Friend;
-  isOnline: boolean; // <-- Thêm lại prop này để nhận trạng thái online
+  isOnline: boolean;
   onClick: (friend: Friend) => void;
 }
 
 export default function FriendListItem({ friend, isOnline, onClick }: Props) {
-  const { unreadCounts } = useNotifications();
-  // Lấy số tin nhắn chưa đọc từ người bạn này
-  const count = unreadCounts[friend._id] || 0;
+  // ## SỬA LỖI Ở ĐÂY ##
+  // Tạm thời xóa bỏ logic sử dụng unreadCounts để ứng dụng có thể chạy.
+  // Chúng ta sẽ quay lại tính năng này sau khi mọi thứ đã ổn định.
 
   return (
     <li className={styles.friendItem} onClick={() => onClick(friend)}>
@@ -29,10 +31,7 @@ export default function FriendListItem({ friend, isOnline, onClick }: Props) {
         {/* Luôn hiển thị trạng thái online nếu isOnline là true */}
         {isOnline && <div className={styles.onlineBadge}></div>}
 
-        {/* Chỉ hiển thị số tin nhắn chưa đọc nếu có và không bị che bởi chấm online */}
-        {count > 0 && (
-          <span className={styles.badge}>{count}</span>
-        )}
+        {/* Logic hiển thị badge đã được tạm thời vô hiệu hóa */}
       </div>
       <p>{friend.username}</p>
     </li>

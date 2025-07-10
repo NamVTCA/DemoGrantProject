@@ -1,3 +1,5 @@
+// File: apps/web/src/Api/user.ts
+
 import type { UpdateUserDto } from '../types/user';
 import { api } from './api'; // <-- Import instance api tập trung
 
@@ -19,15 +21,29 @@ export const setInterests = (ids: string[]) => {
 
 // Lấy thông tin profile và các trạng thái liên quan
 export const getUserProfile = (userId: string) => {
-  return api.get(`/users/profile/${userId}`); // Endpoint này cần được tạo ở backend
+  return api.get(`/users/profile/${userId}`);
 };
 
-// API cho chức năng kết bạn (đã có sẵn)
+
+// === API CHO CHỨC NĂNG BẠN BÈ ===
+
+/**
+ * ## HÀM MỚI ĐƯỢC THÊM VÀO ##
+ * Lấy danh sách bạn bè của người dùng hiện tại.
+ * Gọi đến đúng đường dẫn `/users/friend/list`.
+ */
+export const getAllFriends = () => {
+    return api.get('/users/friend/list');
+};
+
+// Gửi yêu cầu kết bạn
 export const sendFriendRequest = (userId: string) => {
   return api.post(`/users/friend/request/${userId}`);
 };
 
-// API cho chức năng Follow
+
+// === API CHO CHỨC NĂNG FOLLOW ===
+
 export const followUser = (userId: string) => {
   return api.post(`/follow/${userId}`);
 };

@@ -7,14 +7,14 @@ export const notificationApi = {
    * Lấy tất cả thông báo của người dùng
    */
   getNotifications: () => {
-    return api.get('/notifications');
+    return api.get('api/notifications');
   },
 
   /**
    * Lấy số lượng thông báo chưa đọc
    */
   getUnreadCount: () => {
-    return api.get('/notifications/unread-count');
+    return api.get('api/notifications/unread-count');
   },
 
   /**
@@ -22,13 +22,13 @@ export const notificationApi = {
    * @param id ID của thông báo
    */
   markAsRead: (id: string) => {
-    return api.patch(`/notifications/read/${id}`);
+    return api.patch(`api/notifications/read/${id}`);
   },
 
   /**
    * Đánh dấu tất cả thông báo là đã đọc
    */
   markAllAsRead: () => {
-    return api.patch('/notifications/read/all');
+    return api.patch('api/notifications/read/all');
   },
 };
